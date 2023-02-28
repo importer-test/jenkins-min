@@ -31,7 +31,7 @@ pipeline {
         stage('Package') {
             steps {
                 unstash 'roar'
-                git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
+                git branch: 'main', url: 'https://github.com/importer-test/min-docker'
                 sh "docker build -f Dockerfile_roar_db_image -t localhost:5000/roar-db:${STAGE_VERSION} ."
                 sh "docker build -f Dockerfile_roar_web_image --build-arg warFile=web/build/libs/web-${STAGE_VERSION}*.war -t localhost:5000/roar-web:${STAGE_VERSION} . "
                 sh "docker push localhost:5000/roar-db:${STAGE_VERSION}"
