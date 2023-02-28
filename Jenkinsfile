@@ -17,7 +17,7 @@ pipeline {
             }
             steps {
                 sh 'gradle -PSTAGE_VERSION=$STAGE_VERSION clean compileJava assemble'
-                stash includes: '**/web*.war, *.sh', name: 'roar'
+                stash includes: '**/web*.war', name: 'roar'
             }
         }
         stage('Test') {
