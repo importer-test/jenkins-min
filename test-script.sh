@@ -1,0 +1,3 @@
+# simple dummy test script
+echo testing...
+echo $1 $2
