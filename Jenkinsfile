@@ -21,12 +21,36 @@ pipeline {
             }
         }
         stage('Test') {
-            steps {
-                unstash 'roar'
-                git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
-                sh "chmod +x ./test-script.sh"
-                sh "./test-script.sh test1 test2"
-              }
+            parallel {
+                stage('Test on Chrome') {
+                    agent any
+                    steps {
+                        unstash 'roar'
+                        git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
+                        sh "chmod +x ./test-script.sh"
+                        sh "./test-script.sh chrome rc"                       
+                    }
+                    post {
+                        always {
+                            echo "Win test post processing"
+                        }
+                    }
+                }
+                stage('Test On Firefox') {
+                    agent any
+                    steps {
+                        unstash 'roar'
+                        git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
+                        sh "chmod +x ./test-script.sh"
+                        sh "./test-script.sh firefox rc"  
+                    }
+                    post {
+                        always {
+                            echo "Linux test post processing"
+                        }
+                    }
+                }
+            }
         }
         stage('Package') {
             steps {
