@@ -21,12 +21,36 @@ pipeline {
             }
         }
         stage('Test') {
-            steps {
-                unstash 'roar'
-                git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
-                sh "chmod +x ./test-script.sh"
-                sh "./test-script.sh test1 test2"
-              }
+            parallel {
+                stage('Test on Chrome') {
+                    agent browser1
+                    steps {
+                        unstash 'roar'
+                        git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
+                        sh "chmod +x ./test-script.sh"
+                        sh "./test-script.sh chrome rc"                       
+                    }
+                    post {
+                        always {
+                            echo "Chrome test post processing"
+                        }
+                    }
+                }
+                stage('Test On Firefox') {
+                    agent browser2
+                    steps {
+                        unstash 'roar'
+                        git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
+                        sh "chmod +x ./test-script.sh"
+                        sh "./test-script.sh firefox rc"  
+                    }
+                    post {
+                        always {
+                            echo "Firefox test post processing"
+                        }
+                    }
+                }
+            }
         }
         stage('Package') {
             steps {
@@ -34,8 +58,6 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/importer-test/min-docker'
                 sh "docker build -f Dockerfile_roar_db_image -t localhost:5000/roar-db:${STAGE_VERSION} ."
                 sh "docker build -f Dockerfile_roar_web_image --build-arg warFile=web/build/libs/web-${STAGE_VERSION}*.war -t localhost:5000/roar-web:${STAGE_VERSION} . "
-                sh "docker push localhost:5000/roar-db:${STAGE_VERSION}"
-                sh "docker push localhost:5000/roar-web:${STAGE_VERSION}"
             }
         }
     }
