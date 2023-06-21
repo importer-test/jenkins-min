@@ -23,7 +23,7 @@ pipeline {
         stage('Test') {
             parallel {
                 stage('Test on Chrome') {
-                    agent any
+                    agent browser1
                     steps {
                         unstash 'roar'
                         git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
@@ -32,12 +32,12 @@ pipeline {
                     }
                     post {
                         always {
-                            echo "Win test post processing"
+                            echo "Chrome test post processing"
                         }
                     }
                 }
                 stage('Test On Firefox') {
-                    agent any
+                    agent browser2
                     steps {
                         unstash 'roar'
                         git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
@@ -46,7 +46,7 @@ pipeline {
                     }
                     post {
                         always {
-                            echo "Linux test post processing"
+                            echo "Firefox test post processing"
                         }
                     }
                 }
@@ -58,8 +58,6 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/importer-test/min-docker'
                 sh "docker build -f Dockerfile_roar_db_image -t localhost:5000/roar-db:${STAGE_VERSION} ."
                 sh "docker build -f Dockerfile_roar_web_image --build-arg warFile=web/build/libs/web-${STAGE_VERSION}*.war -t localhost:5000/roar-web:${STAGE_VERSION} . "
-                sh "docker push localhost:5000/roar-db:${STAGE_VERSION}"
-                sh "docker push localhost:5000/roar-web:${STAGE_VERSION}"
             }
         }
     }
