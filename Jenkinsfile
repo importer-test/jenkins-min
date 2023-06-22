@@ -23,7 +23,7 @@ pipeline {
         stage('Test') {
             parallel {
                 stage('Test on Chrome') {
-                    agent browser1
+                    agent { label 'browser-tst1' }
                     steps {
                         unstash 'roar'
                         git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
@@ -37,7 +37,7 @@ pipeline {
                     }
                 }
                 stage('Test On Firefox') {
-                    agent browser2
+                    agent { label 'browser-tst2' } 
                     steps {
                         unstash 'roar'
                         git branch: 'test', url: 'https://github.com/importer-test/jenkins-min'
