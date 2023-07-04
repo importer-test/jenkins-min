@@ -1,0 +1,61 @@
+name: demo-pipe
+on:
+  workflow_dispatch:
+jobs:
+  Source:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: echo message
+      run: echo Source
+  Build:
+    runs-on: ubuntu-latest
+    needs: Source
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: echo message
+      run: echo Build
+  Test_Test_On_Windows:
+    name: Test-Test On Windows
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: echo message
+      run: echo Test on Windows
+    - name: echo message
+      run: echo post
+      if: always()
+  Test_Test_On_Linux:
+    name: Test-Test On Linux
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: echo message
+      run: echo Test on Linux
+    - name: echo message
+      run: echo post
+      if: always()
+  Package:
+    runs-on: ubuntu-latest
+    needs:
+    - Test_Test_On_Windows
+    - Test_Test_On_Linux
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: echo message
+      run: echo Package
+  Deploy:
+    runs-on: ubuntu-latest
+    needs: Package
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+    - name: echo message
+      run: echo Deploy
